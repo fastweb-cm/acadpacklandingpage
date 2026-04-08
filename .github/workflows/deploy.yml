@@ -30,8 +30,8 @@ jobs:
                   # We need to move static assets into it for a complete package
                   cp -r public .next/standalone/public
                   cp -r .next/static .next/standalone/.next/static
-                  # Add the custom server.ts bridge
-                  cp server.ts .next/standalone/server.ts
+                  # Add the custom server.js bridge
+                  cp server.js .next/standalone/server.js
 
             - name: 📂 Sync to cPanel via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
