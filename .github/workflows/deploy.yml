@@ -1,4 +1,4 @@
-name: 🚀 Deploy to cPanel
+name: 🚀 Deploy AcadPack to cPanel
 
 on:
     push:
@@ -26,16 +26,16 @@ jobs:
 
             - name: 🧹 Prepare Files for FTP
               run: |
-                  # 1. Move the production server and node_modules to the root
-                  cp -r .next/standalone/. ./
+                  # 1. Create a clean deployment folder
+                  mkdir deploy_me
 
-                  # 2. Ensure static assets are in the internal .next folder
-                  mkdir -p .next/static
-                  cp -r .next/static/. .next/static/
-                  cp -r public/. public/
+                  # 2. Copy standalone server and node_modules into it
+                  cp -r .next/standalone/. ./deploy_me/
 
-                  # 3. Clean up the standalone folder so it's not duplicated
-                  rm -rf .next/standalone
+                  # 3. Copy static assets into the internal structure Next.js expects
+                  mkdir -p ./deploy_me/.next/static
+                  cp -r .next/static/. ./deploy_me/.next/static/
+                  cp -r public/. ./deploy_me/public/
 
             - name: 📂 Sync to cPanel via FTP
               uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -45,6 +45,7 @@ jobs:
                   password: ${{ secrets.FTP_PASSWORD }}
                   protocol: ftps
                   port: 21
-                  # Path where your Node app is hosted in cPanel
-                  local-dir: .next/standalone/
+                  security: loose
+                  # This ensures we only upload the production-ready files
+                  local-dir: ./deploy_me/
                   server-dir: ./
